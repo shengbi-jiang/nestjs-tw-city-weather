@@ -1,1 +1,3 @@
-export const USED_ENTITIES = [];
+import { Weather } from '../weather/weather.entity';
+
+export const USED_ENTITIES = [Weather];

@@ -7,7 +7,8 @@ export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @Get(':city')
-  getWeather(@Param('city', CityPipe) city: string) {
-    // TODO: return the weather data of the specified city.
+  async getWeather(@Param('city', CityPipe) city: string) {
+    const { data } = await this.weatherService.mustReadOneByCity(city);
+    return data;
   }
 }

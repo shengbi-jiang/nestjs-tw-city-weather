@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidV4 } from 'uuid';
 import { Repository } from 'typeorm';
@@ -15,9 +15,17 @@ export class WeatherService {
     private readonly weatherRepository: Repository<Weather>,
   ) {}
 
-  async readByCity(city: string): Promise<Weather | null> {
+  async readOneByCity(city: string): Promise<Weather | null> {
     const weather = await this.weatherRepository.findOne({ city });
     return weather ?? null;
+  }
+
+  async mustReadOneByCity(city: string): Promise<Weather> {
+    const weather = await this.readOneByCity(city);
+    if (!weather) {
+      throw new NotFoundException();
+    }
+    return weather;
   }
 
   async createOne(location: WeatherAtLocation): Promise<Weather> {
@@ -30,7 +38,7 @@ export class WeatherService {
   }
 
   private async updateCurrentWeatherByLocation(location: WeatherAtLocation) {
-    const weather = await this.readByCity(location.locationName);
+    const weather = await this.readOneByCity(location.locationName);
     if (!weather) {
       await this.createOne(location);
       return;

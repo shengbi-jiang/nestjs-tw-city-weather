@@ -10,4 +10,5 @@ export const CONFIG_SCHEMA = joi.object({
   DB_NAME: joi.string().required(),
   DB_TYPEORM_SYNC: joi.boolean().required(),
   DB_TYPEORM_LOG: joi.string().optional().default('all'),
+  OPEN_WEATHER_TOKEN: joi.string().required(),
 });

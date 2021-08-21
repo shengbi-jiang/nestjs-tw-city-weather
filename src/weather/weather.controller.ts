@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { CityPipe } from './request.pipe';
-import { WeatherService } from './weather.service';
+import { WeatherService } from './weather-service/weather.service';
 
 @Controller('weather')
 export class WeatherController {

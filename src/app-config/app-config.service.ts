@@ -44,4 +44,8 @@ export class AppConfigService {
   get dbTypeormLog(): string {
     return this.configService.get('DB_TYPEORM_LOG');
   }
+
+  get openWeatherToken(): string {
+    return this.configService.get<string>('OPEN_WEATHER_TOKEN');
+  }
 }

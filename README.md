@@ -4,6 +4,29 @@
 
 An API server for Taiwan's weather information.
 
+## APIs
+
+### Get an API key
+
+To get an API key, send a request with the following body to endpoint `POST /auth/token`.
+
+The `username` and `password` are specified in the environment variable `API_USERNAME` and `API_PASSWORD`, respectively.
+
+```json
+{
+  "username": "API_USERNAME",
+  "password": "API_PASSWORD"
+}
+```
+
+### Request weather data
+
+The following APIs require a API key placed in the header `Authorization` in the format `Bearer API_KEY`, where `API_KEY` is replaced by the API key you have.
+
+To get all weather data, send a request to the endpoint `GET /weather`.
+
+To get the weather data of a specific city, send a request to the endpoint `GET /weather/CITY`, where `CITY` is replaced by the city name (i.g. `臺北市`).
+
 ## Environment File
 
 If the environment variable `NODE_ENV` is not set, the server will access `.env/.env` as the default environment variable file.

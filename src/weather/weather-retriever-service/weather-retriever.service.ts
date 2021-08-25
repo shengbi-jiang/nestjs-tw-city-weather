@@ -1,4 +1,4 @@
-import { HttpService, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { HttpService, Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import Axios, { AxiosError } from 'axios';
 import { AppConfigService } from '../../app-config/app-config.service';
@@ -14,6 +14,8 @@ const CONTINUE_SIGNAL = Symbol();
 
 @Injectable()
 export class WeatherRetrieverService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(WeatherRetrieverService.name);
+
   constructor(
     private readonly weatherService: WeatherService,
     private readonly httpService: HttpService,
@@ -31,7 +33,7 @@ export class WeatherRetrieverService implements OnApplicationBootstrap {
 
   private examineResult(data: WeatherResponse) {
     if (data.success !== 'true') {
-      console.warn("Failed to retrieve the current weather data: 'success' is not 'true'");
+      this.logger.warn("Failed to retrieve the current weather data: 'success' is not 'true'");
       throw CONTINUE_SIGNAL;
     }
   }
@@ -59,7 +61,7 @@ export class WeatherRetrieverService implements OnApplicationBootstrap {
     } else {
       message += `An error occurred when setting up the request: ${err.message}\n`;
     }
-    console.error(message);
+    this.logger.error(message);
   }
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -75,16 +77,16 @@ export class WeatherRetrieverService implements OnApplicationBootstrap {
         if (Axios.isAxiosError(err)) {
           this.handleAxiosError(err, tries);
         } else {
-          console.error(err);
+          this.logger.error(err);
         }
       }
       ++tries;
     }
 
     if (tries >= RETRY_TIMES) {
-      console.error(`Failed to retrieve the latest weather data after ${RETRY_TIMES} times attempts`);
+      this.logger.error(`Failed to retrieve the latest weather data after ${RETRY_TIMES} times attempts`);
     } else {
-      console.log('Successfully retrieved the latest weather data.');
+      this.logger.log('Successfully retrieved the latest weather data.');
     }
   }
 }

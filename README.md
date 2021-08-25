@@ -37,6 +37,10 @@ OPEN_WEATHER_TOKEN=token
 | DB_TYPEORM_SYNC    | Indicates if database schema should be auto created on every application launch.                                                    |
 | DB_TYPEORM_LOG     | Indicates if logging is enabled or not.                                                                                             |
 | OPEN_WEATHER_TOKEN | The authorization token for retrieving open weather data.                                                                           |
+| JWT_SECRET         | The secret of JSON web tokens. (API Keys)                                                                                           |
+| JWT_EXPIRATION     | The expiration of JSON web tokens in describing a time span [zeit/ms](https://github.com/vercel/ms)                                 |
+| API_USERNAME       | The username for getting a new JSON web token.                                                                                      |
+| API_PASSWORD       | The password for getting a new JSON web token.                                                                                      |
 
 ## Installation
 

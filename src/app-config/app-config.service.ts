@@ -48,4 +48,20 @@ export class AppConfigService {
   get openWeatherToken(): string {
     return this.configService.get<string>('OPEN_WEATHER_TOKEN');
   }
+
+  get jwtSecret(): string {
+    return this.configService.get<string>('JWT_SECRET');
+  }
+
+  get jwtExpiration(): string {
+    return this.configService.get<string>('JWT_EXPIRATION');
+  }
+
+  get apiUsername(): string {
+    return this.configService.get<string>('API_USERNAME');
+  }
+
+  get apiPassword(): string {
+    return this.configService.get<string>('API_PASSWORD');
+  }
 }

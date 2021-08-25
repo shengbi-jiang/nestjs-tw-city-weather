@@ -21,10 +21,8 @@ export class AuthStrategy implements IAuthStrategy {
     }
 
     const token = authorization.slice(BEARER_PREFIX_LENGTH);
-    console.log('TOKEN:', token);
     try {
-      // TODO: verify authorization token
-      // this.authService.verifyJwtToken(token);
+      this.authService.verifyJwtToken(token);
     } catch (err) {
       throw err;
     }

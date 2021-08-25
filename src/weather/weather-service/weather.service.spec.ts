@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { FindConditions } from 'typeorm';
@@ -67,6 +68,45 @@ describe('WeatherService', () => {
       const weather = await service.readOneByCity(CITY_NAME);
       expect(weather).toBeNull();
       expect(deps.WeatherRepository.findOne).toBeCalled();
+    });
+  });
+
+  describe('mustReadOneByCity', () => {
+    it('should return weather data when the weather data of a specified city is found', async () => {
+      const WEATHER = createWeather();
+      const CITY_NAME = WEATHER.city;
+      const deps = await prepare({
+        WeatherRepository: {
+          findOne: jest.fn(async (conditions: FindConditions<Weather>) => {
+            expect(conditions).toEqual({ city: CITY_NAME });
+            return WEATHER;
+          }),
+        },
+      });
+
+      const weather = await service.mustReadOneByCity(CITY_NAME);
+      expect(weather).toBe(WEATHER);
+      expect(deps.WeatherRepository.findOne).toBeCalled();
+    });
+
+    it('should throw a NotFoundException when the weather data of a specified city is not found', async () => {
+      const CITY_NAME = 'Tainan';
+      const deps = await prepare({
+        WeatherRepository: {
+          findOne: jest.fn(async (conditions: FindConditions<Weather>) => {
+            expect(conditions).toEqual({ city: CITY_NAME });
+            return null;
+          }),
+        },
+      });
+
+      try {
+        await service.mustReadOneByCity(CITY_NAME);
+        fail('The service should throw a NotFoundException');
+      } catch (err) {
+        expect(err).toBeInstanceOf(NotFoundException);
+        expect(deps.WeatherRepository.findOne).toBeCalled();
+      }
     });
   });
 });

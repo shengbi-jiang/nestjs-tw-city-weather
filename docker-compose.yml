@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    ports:
+      - '${PORT:-8000}:${PORT:-8000}'
+    env_file: .env/.env
+    environment:
+      DB_HOST: db
+    expose:
+      - ${PORT:-8000}
+  db:
+    image: postgres:13.2
+    volumes:
+      - 'dbdata:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_USER: ${DB_USER:?The variable DB_USER should be specified.}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?The variable DB_PASSWORD should be specified.}
+      POSTGRES_DB: ${DB_NAME:?The variable DB_NAME should be specified.}
+volumes:
+  dbdata:

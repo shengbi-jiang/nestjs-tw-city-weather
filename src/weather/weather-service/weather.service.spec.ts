@@ -9,10 +9,10 @@ import {
 } from '../weather-retriever-service/weather-response-result.type';
 import { WeatherService } from './weather.service';
 
-function createWeather() {
+function createWeather(city = 'Taipei') {
   const weather = new Weather();
   weather.id = 'UUID';
-  weather.city = 'Taipei';
+  weather.city = city;
   weather.data = {};
   return weather;
 }
@@ -38,6 +38,21 @@ describe('WeatherService', () => {
   it('should be defined', async () => {
     await prepare();
     expect(service).toBeDefined();
+  });
+
+  describe('readMany', () => {
+    it('should return an array of weather data', async () => {
+      const WEATHERS = [createWeather('Taipei'), createWeather('Tainan')];
+      const deps = await prepare({
+        WeatherRepository: {
+          find: jest.fn(async () => WEATHERS),
+        },
+      });
+
+      const weathers = await service.readMany();
+      expect(weathers).toBe(WEATHERS);
+      expect(deps.WeatherRepository.find).toBeCalled();
+    });
   });
 
   describe('readOneByCity', () => {

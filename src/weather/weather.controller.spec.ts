@@ -21,41 +21,58 @@ describe('WeatherController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should return the weather data of a specified city', async () => {
-    const CITY_NAME = 'Taipei';
-    const WEATHER = { data: 'SAMPLE' };
-    const deps = await prepare({
-      WeatherService: {
-        mustReadOneByCity: jest.fn(async (city: string) => {
-          expect(city).toBe(CITY_NAME);
-          return WEATHER;
-        }),
-      },
-    });
+  describe('getManyWeathers', () => {
+    it('should return an array of weather data', async () => {
+      const WEATHERS = [{ data: 'SAMPLE1' }, { data: 'SAMPLE2' }];
+      const deps = await prepare({
+        WeatherService: {
+          readMany: jest.fn(async () => WEATHERS),
+        },
+      });
 
-    const data = await controller.getWeather(CITY_NAME);
-    expect(data).toBe(WEATHER.data);
-    expect(deps.WeatherService.mustReadOneByCity).toBeCalledWith(CITY_NAME);
+      const weathers = await controller.getManyWeathers();
+      expect(weathers).toBe(WEATHERS);
+      expect(deps.WeatherService.readMany).toBeCalled();
+    });
   });
 
-  it('should not catch any exception', async () => {
-    const CITY_NAME = 'XYZ';
-    const notFoundException = new NotFoundException();
-    const deps = await prepare({
-      WeatherService: {
-        mustReadOneByCity: jest.fn(async (city: string) => {
-          expect(city).toBe(CITY_NAME);
-          throw notFoundException;
-        }),
-      },
+  describe('getWeather', () => {
+    it('should return the weather data of a specified city', async () => {
+      const CITY_NAME = 'Taipei';
+      const WEATHER = { data: 'SAMPLE' };
+      const deps = await prepare({
+        WeatherService: {
+          mustReadOneByCity: jest.fn(async (city: string) => {
+            expect(city).toBe(CITY_NAME);
+            return WEATHER;
+          }),
+        },
+      });
+
+      const data = await controller.getWeather(CITY_NAME);
+      expect(data).toBe(WEATHER.data);
+      expect(deps.WeatherService.mustReadOneByCity).toBeCalledWith(CITY_NAME);
     });
 
-    try {
-      await controller.getWeather(CITY_NAME);
-      fail('The controller should not catch any exception');
-    } catch (err) {
-      expect(err).toBe(notFoundException);
-      expect(deps.WeatherService.mustReadOneByCity).toBeCalledWith(CITY_NAME);
-    }
+    it('should not catch any exception', async () => {
+      const CITY_NAME = 'XYZ';
+      const notFoundException = new NotFoundException();
+      const deps = await prepare({
+        WeatherService: {
+          mustReadOneByCity: jest.fn(async (city: string) => {
+            expect(city).toBe(CITY_NAME);
+            throw notFoundException;
+          }),
+        },
+      });
+
+      try {
+        await controller.getWeather(CITY_NAME);
+        fail('The controller should not catch any exception');
+      } catch (err) {
+        expect(err).toBe(notFoundException);
+        expect(deps.WeatherService.mustReadOneByCity).toBeCalledWith(CITY_NAME);
+      }
+    });
   });
 });

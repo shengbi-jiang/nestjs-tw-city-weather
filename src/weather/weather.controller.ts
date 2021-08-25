@@ -8,6 +8,12 @@ export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @UseAuthGuard()
+  @Get()
+  async getManyWeathers() {
+    return await this.weatherService.readMany();
+  }
+
+  @UseAuthGuard()
   @Get(':city')
   async getWeather(@Param('city', CityPipe) city: string) {
     const { data } = await this.weatherService.mustReadOneByCity(city);

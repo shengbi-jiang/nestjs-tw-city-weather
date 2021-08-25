@@ -15,6 +15,10 @@ export class WeatherService {
     private readonly weatherRepository: Repository<Weather>,
   ) {}
 
+  async readMany(): Promise<Weather[]> {
+    return await this.weatherRepository.find();
+  }
+
   async readOneByCity(city: string): Promise<Weather | null> {
     const weather = await this.weatherRepository.findOne({ city });
     return weather ?? null;

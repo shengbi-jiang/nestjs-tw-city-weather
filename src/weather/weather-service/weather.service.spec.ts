@@ -1,8 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { FindConditions } from 'typeorm';
+import { DeepPartial, FindConditions } from 'typeorm';
 import { Weather } from '../weather.entity';
+import { Location as WeatherAtLocation } from '../weather-retriever-service/weather-response-result.type';
 import { WeatherService } from './weather.service';
 
 function createWeather() {
@@ -107,6 +108,36 @@ describe('WeatherService', () => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(deps.WeatherRepository.findOne).toBeCalled();
       }
+    });
+  });
+
+  describe('createOne', () => {
+    it('should create a new weather data', async () => {
+      const LOCATION: WeatherAtLocation = {
+        locationName: 'Taipei',
+        weatherElement: [],
+      };
+      const WEATHER = createWeather();
+
+      const deps = await prepare({
+        WeatherRepository: {
+          create: jest.fn((entityLike: DeepPartial<Weather>) => {
+            expect(entityLike.id).toEqual(expect.any(String));
+            expect(entityLike.city).toBe(LOCATION.locationName);
+            expect(entityLike.data).toBe(LOCATION);
+            return WEATHER;
+          }),
+          save: jest.fn(async (entity: Weather) => {
+            expect(entity).toBe(WEATHER);
+            return entity;
+          }),
+        },
+      });
+
+      const weather = await service.createOne(LOCATION);
+      expect(weather).toBe(WEATHER);
+      expect(deps.WeatherRepository.create).toBeCalled();
+      expect(deps.WeatherRepository.save).toBeCalled();
     });
   });
 });
